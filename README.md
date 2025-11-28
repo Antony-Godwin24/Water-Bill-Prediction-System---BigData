@@ -16,7 +16,7 @@ This project is designed as a **complete 60-mark Big Data + ML practical**, with
     ```
 3.  Run the Streamlit app:
     ```bash
-    streamlit run streamlit_app.py
+    python -m streamlit run streamlit_app.py
     ```
 
 ---
