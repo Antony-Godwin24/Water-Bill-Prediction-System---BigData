@@ -1,0 +1,11 @@
+pandas
+matplotlib
+seaborn
+streamlit
+fpdf
+scikit-learn
+nltk
+better_profanity
+wordcloud
+pyspark
+pyarrow
