@@ -8,44 +8,26 @@ import tempfile
 from datetime import datetime
 from fpdf import FPDF
 from spark_app import run_full_pipeline_from_df, TARGET_COL, TIMESTAMP_COL
+def inject_css():
+    # Hardcoded Dark Theme Colors
+    bg = "#000000"          # Pure black
+    bg_elevated = "#121212" # Very dark gray for cards
+    bg_deep = "#000000"
+    text = "#ffffff"        # Pure white
+    text_muted = "#a3a3a3"  # Light gray
+    accent = "#00bcd4"      # Cyan accent
+    accent_soft = "#000000"
+    accent_alt = "#00e676"
+    card_shadow = "none"
 
-THEMES = {
-    "light": {
-        "bg": "#f5f7fb",
-        "bg_elevated": "#ffffff",
-        "bg_deep": "#e6edf7",
-        "text": "#111827",
-        "text_muted": "#6b7280",
-        "accent": "#0ea5e9",      # Sky blue for water
-        "accent_soft": "#e0f2fe",
-        "accent_alt": "#22c55e",  # green
-        "danger": "#ef4444",
-        "card_shadow": "0 18px 45px rgba(15, 23, 42, 0.07)",
-    },
-    "dark": {
-        "bg": "#020617",
-        "bg_elevated": "#0f172a",
-        "bg_deep": "#020617",
-        "text": "#e5e7eb",
-        "text_muted": "#9ca3af",
-        "accent": "#38bdf8",      # lighter blue
-        "accent_soft": "#0f172a",
-        "accent_alt": "#22c55e",
-        "danger": "#f97373",
-        "card_shadow": "0 22px 55px rgba(0,0,0,0.75)",
-    },
-}
-
-def inject_css(theme_name: str):
-    t = THEMES[theme_name]
     st.markdown(
         f"""
         <style>
         /* ------------------ GLOBAL ------------------ */
         .stApp {{
-            background: radial-gradient(circle at top left, 
-                #0f172a 0, #020617 18%, {t['bg']} 50%, {t['bg']} 100%);
-            color: {t['text']};
+            background-color: {bg};
+            color: {text};
+            font-family: "Courier New", Courier, monospace;
         }}
         .block-container {{
             padding-top: 3rem;
@@ -55,10 +37,10 @@ def inject_css(theme_name: str):
             max-width: 100%;
         }}
         h1, h2, h3, h4 {{
-            color: {t['text']} !important;
+            color: {text} !important;
         }}
         p, label, span, div {{
-            color: {t['text_muted']} !important;
+            color: {text_muted} !important;
         }}
 
         /* ------------------ NAVBAR ------------------ */
@@ -69,8 +51,8 @@ def inject_css(theme_name: str):
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: linear-gradient(90deg, #0f172a, {t['accent']});
-            box-shadow: {t['card_shadow']};
+            background: linear-gradient(90deg, #0f172a, {accent});
+            box-shadow: {card_shadow};
         }}
         .ev-navbar-left {{
             display: flex;
@@ -92,45 +74,35 @@ def inject_css(theme_name: str):
         .ev-title-main {{
             font-weight: 600;
             font-size: 1.2rem;
-            color: {t['text']} !important;
+            color: {text} !important;
         }}
         .ev-title-sub {{
             font-size: 0.78rem;
-            color: {t['text_muted']} !important;
+            color: {text_muted} !important;
         }}
         .ev-chip {{
             font-size: 0.78rem;
             padding: 0.25rem 0.8rem;
             border-radius: 999px;
-            background: {t['accent_soft']};
-            color: {t['accent']} !important;
+            background: {accent_soft};
+            color: {accent} !important;
             font-weight: 600;
             border: 1px solid rgba(148,163,184,0.25);
         }}
-        /* Theme toggle button */
-        .ev-theme-btn {{
-            padding: 10px 20px;
-            border-radius: 25px;
-            border: 1px solid rgba(255,255,255,0.35);
-            background: {t['accent']};
-            color: white;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }}
+        
         /* ------------------ CARDS ------------------ */
         .ev-card {{
             border-radius: 20px;
             padding: 1.6rem 1.8rem;
-            background: {t['bg_elevated']};
-            box-shadow: {t['card_shadow']};
+            background: {bg_elevated};
+            box-shadow: {card_shadow};
             margin-top: 1.4rem;
         }}
         .ev-card-hero {{
             border-radius: 24px;
             padding: 1.7rem 2rem;
-            background: linear-gradient(135deg, {t['bg_deep']}, {t['accent_soft']});
-            box-shadow: {t['card_shadow']};
+            background: linear-gradient(135deg, {bg_deep}, {accent_soft});
+            box-shadow: {card_shadow};
             margin-top: 1.4rem;
             margin-bottom: 1.6rem;
         }}
@@ -138,11 +110,11 @@ def inject_css(theme_name: str):
             font-size: 1.05rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
-            color: {t['text']} !important;
+            color: {text} !important;
         }}
         .ev-section-caption {{
             font-size: 0.88rem;
-            color: {t['text_muted']} !important;
+            color: {text_muted} !important;
         }}
         /* ------------------ METRIC CARDS ------------------ */
         .ev-metric-grid {{
@@ -154,21 +126,21 @@ def inject_css(theme_name: str):
         .ev-metric-card {{
             border-radius: 16px;
             padding: 1rem 1.1rem;
-            background: {t['bg_elevated']};
-            box-shadow: {t['card_shadow']};
+            background: {bg_elevated};
+            box-shadow: {card_shadow};
             border: 1px solid rgba(148,163,184,0.18);
         }}
         .ev-metric-label {{
             font-size: 0.78rem;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            color: {t['text_muted']} !important;
+            color: {text_muted} !important;
             margin-bottom: 0.3rem;
         }}
         .ev-metric-value {{
             font-size: 1.32rem;
             font-weight: 600;
-            color: {t['text']} !important;
+            color: {text} !important;
         }}
 
         /* ------------------ BUTTONS ------------------ */
@@ -179,7 +151,7 @@ def inject_css(theme_name: str):
             border: none;
             font-weight: 500;
             font-size: 0.95rem;
-            background: {t['accent']};
+            background: {accent};
             color: white !important;
             box-shadow: 0 14px 30px rgba(15,23,42,0.35);
         }}
@@ -192,7 +164,7 @@ def inject_css(theme_name: str):
         /* Secondary button styling */
         .ev-secondary-btn>button {{
             background: transparent !important;
-            color: {t['accent']} !important;
+            color: {accent} !important;
             border: 1px solid rgba(148,163,184,0.6) !important;
             box-shadow: none !important;
         }}
@@ -200,15 +172,15 @@ def inject_css(theme_name: str):
         /* ------------------ TABLE / FILE UPLOADER ------------------ */
         section[data-testid="stFileUploader"] > div {{
             border-radius: 18px;
-            background: {t['bg_elevated']};
+            background: {bg_elevated};
         }}
 
         /* ------------------ CHART CARDS ------------------ */
         .ev-chart-card {{
             border-radius: 18px;
             padding: 1.2rem 1.3rem;
-            background: {t['bg_elevated']};
-            box-shadow: {t['card_shadow']};
+            background: {bg_elevated};
+            box-shadow: {card_shadow};
         }}
 
         /* Small badge */
@@ -218,8 +190,8 @@ def inject_css(theme_name: str):
             gap: 0.3rem;
             padding: 0.2rem 0.6rem;
             border-radius: 999px;
-            background: {t['accent_soft']};
-            color: {t['accent']};
+            background: {accent_soft};
+            color: {accent};
             font-size: 0.75rem;
             font-weight: 500;
         }}
@@ -324,12 +296,8 @@ def plot_error_hist(df):
     return fig
 
 def main():
-    # Session theme
-    if "theme" not in st.session_state:
-        st.session_state.theme = "dark"
-
-    theme = st.session_state.theme
-    inject_css(theme)
+    # Force simple dark theme
+    inject_css()
     st.set_page_config(
         page_title="Water Bill Predictions",
         layout="wide",
@@ -429,85 +397,51 @@ def main():
     st.markdown(
         """
         <div class="ev-card-hero">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem;">
-            <div style="max-width:60%;">
-              <div class="ev-badge-soft">Live Big Data Practical Dashboard</div>
-              <h2 style="margin-top:0.6rem; margin-bottom:0.3rem;">End-to-End Water Bill Analytics</h2>
-              <p style="font-size:0.92rem;">
-                Upload a Water Bill CSV or use the built-in sample dataset. Spark will clean and preprocess the data, 
-                a RandomForest model will predict bill amounts, and you get interactive charts plus a downloadable PDF report – 
-                perfect for a 60-mark exam or viva.
-              </p>
-            </div>
-            <div style="text-align:right; min-width:180px;">
-              <div style="font-size:0.8rem; color:#9ca3af;">Current run</div>
-              <div style="font-size:1.4rem; font-weight:600;">Water-Spark-RF</div>
-              <div style="font-size:0.78rem; margin-top:0.3rem; color:#9ca3af;">v1.0 · Antony's project</div>
-            </div>
-          </div>
-        </div>
+  <div style="max-width:100%;">
+    <h2 style="margin-top:0.6rem; margin-bottom:0.3rem;">Water Bill Predictions System</h2>
+    <p style="font-size:0.92rem;">
+      A simple project that predicts water bills using uploaded CSV data and displays analytics with charts.
+    </p>
+  </div>
+</div>
+
         """,
         unsafe_allow_html=True,
     )
 
     # ---------- DATA SOURCE CARD ----------
+    # ---------- DATA SOURCE CARD ----------
     st.markdown(
         """
         <div class="ev-card">
-          <div class="ev-section-title">1. Choose Data Source</div>
+          <div class="ev-section-title">1. Data Source</div>
           <div class="ev-section-caption">
-            Either upload your own Water Bill CSV or use the built-in dataset (<code>dataset/water_bill_data.csv</code>).
+            Using the built-in dataset (<code>dataset/Water_Consumption_And_Cost__2013_-_Feb_2023_.csv</code>).
           </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # Put actual widgets after that card (Streamlit always renders in order)
-    mode_col = st.container()
-    with mode_col:
-        source_mode = st.radio(
-            "Data Source",
-            ["Upload CSV", "Use local sample dataset"],
-            horizontal=True,
-            label_visibility="collapsed",
-        )
-
-        df = None
-
-        if source_mode == "Use local sample dataset":
-            try:
-                df = pd.read_csv("dataset/water_bill_data.csv")
-                # Rename column to match Water Bill terminology immediately
-                if "Charging_Load_kW" in df.columns:
-                    df = df.rename(columns={"Charging_Load_kW": "Water_Bill_Amount"})
-                
-                st.success("Loaded local dataset: `dataset/water_bill_data.csv`")
-                st.dataframe(df.head(), use_container_width=True)
-            except Exception as e:
-                st.error(f"Failed to load local dataset: {e}")
-                return
-        else:
-            uploaded = st.file_uploader(
-                "Upload Water Bill Dataset (CSV)",
-                type=["csv"],
-                help="Supports large CSV files; processing is done with Apache Spark.",
-            )
-            if not uploaded:
-                st.info("Upload a CSV file to continue.")
-                return
-
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".csv") as tmp:
-                tmp.write(uploaded.read())
-                tmp.flush()
-                df = pd.read_csv(tmp.name)
-            
-            # Rename column to match Water Bill terminology immediately
-            if "Charging_Load_kW" in df.columns:
-                df = df.rename(columns={"Charging_Load_kW": "Water_Bill_Amount"})
-
-            st.success("CSV uploaded successfully.")
-            st.dataframe(df.head(), use_container_width=True)
+    # Load local dataset directly
+    df = None
+    try:
+        df = pd.read_csv("dataset/Water_Consumption_And_Cost__2013_-_Feb_2023_.csv")
+        
+        # Rename columns to match Water Bill terminology immediately
+        rename_map = {
+            "Service End Date": "Date_Time",
+            "Current Charges": "Water_Bill_Amount",
+            "Charging_Load_kW": "Water_Bill_Amount"
+        }
+        df = df.rename(columns=rename_map)
+        
+        st.success("Loaded local dataset: `dataset/Water_Consumption_And_Cost__2013_-_Feb_2023_.csv`")
+        st.success("Loaded local dataset: `dataset/Water_Consumption_And_Cost__2013_-_Feb_2023_.csv`")
+        # st.dataframe(df.head(), use_container_width=True) # Hidden as per request
+    except Exception as e:
+        st.error(f"Failed to load local dataset: {e}")
+        return
 
     # ---------- RUN PIPELINE ----------
     st.markdown(
@@ -614,37 +548,7 @@ def main():
         charts["Prediction Error Distribution"] = fig_err
 
 
-    # ---------- DOWNLOADS ----------
-    st.markdown(
-        """
-        <div class="ev-card" style="margin-top:2rem;">
-          <div class="ev-section-title">5. Export Results</div>
-          <div class="ev-section-caption">
-            Download the processed predictions as CSV and a PDF report to attach directly in your project record or viva submission.
-          </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    cdl1, cdl2 = st.columns(2)
-
-    with cdl1:
-        csv_bytes = predicted_df.to_csv(index=False).encode("utf-8")
-        st.download_button(
-            "⬇ Download Predictions CSV",
-            data=csv_bytes,
-            file_name=f"water_bill_predictions_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
-        )
-
-    with cdl2:
-        pdf_bytes = generate_pdf_report(predicted_df, metrics, charts)
-        st.download_button(
-            "📄 Download PDF Report",
-            data=pdf_bytes,
-            file_name=f"water_bill_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
-            mime="application/pdf",
-        )
+    # Export section removed as per request
 
 
 if __name__ == "__main__":

@@ -59,6 +59,7 @@ def _parse_timestamp_series(series: pd.Series) -> pd.Series:
             "%m/%d/%Y %H:%M",
             "%d/%m/%Y %H:%M",
             "%Y/%m/%d %H:%M",
+            "%m/%d/%Y",  # Added for Water Bill dataset
         ]
         for fmt in formats:
             try:

@@ -1,7 +1,14 @@
 import pandas as pd
 
 # Load dataset
-df = pd.read_csv("dataset/water_bill_data.csv")
+# Load dataset
+df = pd.read_csv("dataset/Water_Consumption_And_Cost__2013_-_Feb_2023_.csv")
+
+# Rename columns to match the expected schema
+df = df.rename(columns={
+    "Service End Date": "Date_Time",
+    "Current Charges": "Water_Bill_Amount"
+})
 
 # 1️⃣ Drop duplicates
 df = df.drop_duplicates()
