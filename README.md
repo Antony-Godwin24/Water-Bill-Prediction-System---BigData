@@ -7,6 +7,18 @@ A fully interactive **Streamlit dashboard** provides real-time visual insights, 
 
 This project is designed as a **complete 60-mark Big Data + ML practical**, with fully automated pipeline execution.
 
+## 🚀 Running in GitHub Codespaces
+
+1.  Open the terminal in Codespaces.
+2.  Run the setup script to install Java and dependencies:
+    ```bash
+    bash codespace_setup.sh
+    ```
+3.  Run the Streamlit app:
+    ```bash
+    streamlit run streamlit_app.py
+    ```
+
 ---
 
 # Why This Project Stands Out
